@@ -77,8 +77,7 @@ void sendmsg(char *user, char *target, char *msg) {
 void* messageListener(void *arg) {
     struct message m;
 
-    int fd = open(uName, O_RDONLY | O_NONBLOCK);
-
+    int fd = open(uName, O_RDONLY);
     if (fd < 0) {
         perror("open user FIFO");
         pthread_exit(NULL);
@@ -88,12 +87,8 @@ void* messageListener(void *arg) {
         int n = read(fd, &m, sizeof(struct message));
 
         if (n == sizeof(struct message)) {
-            printf("\nIncoming message from %s: %s\n", m.source, m.msg);
-            fprintf(stderr, "rsh>");
+            printf("Incoming message from %s: %s\n", m.source, m.msg);
             fflush(stdout);
-            fflush(stderr);
-        } else {
-            usleep(100000);
         }
     }
 
@@ -125,7 +120,6 @@ int main(int mainArgc, char *mainArgv[]) {
     }
 
     while (1) {
-        fprintf(stderr, "rsh>");
 
         if (fgets(line, sizeof(line), stdin) == NULL) {
             return 0;
